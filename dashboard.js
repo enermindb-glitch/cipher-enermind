@@ -2,7 +2,7 @@
    CIPHERMIND — dashboard.js
    =========================================================== */
 
-const API_BASE = "https://script.google.com/macros/s/AKfycbwd2_lf7lnb8rY9t2NZSTcca-JZxUFHru6xCuC8-dNfh7MNIUjHhD7m9R-lgInZxEgtVw/exec"; // same URL as app.js
+const API_BASE = "https://script.google.com/macros/s/AKfycbza9s-gysxJB1TxA8JCZzqYQtVL2S-douMxZDKeRtdILNLZyjJQo6uIzC8TeQvMypAKuA/exec"; // same URL as app.js
 
 /* ---- Session guard ------------------------------------------------ */
 const session = JSON.parse(sessionStorage.getItem("ciphermind_user") || "null");
@@ -95,6 +95,35 @@ async function refreshStatus() {
     currentUser.paymentStatus = data.paymentStatus;
   } catch (err) { /* leave defaults */ }
   applyTierUI();
+}
+
+/* ---- Returning from Pesapal's payment page ------------------------ */
+async function handlePaymentReturn() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("payment") !== "return") return;
+
+  // Clean the URL so a refresh doesn't re-trigger this
+  window.history.replaceState({}, "", "dashboard.html");
+
+  const banner = document.createElement("div");
+  banner.className = "lock-notice";
+  banner.style.margin = "0 0 20px";
+  banner.textContent = "Confirming your payment with Pesapal — this can take a few seconds…";
+  document.querySelector(".app-main").prepend(banner);
+
+  // Pesapal's IPN call to our backend can land a moment after you're redirected
+  // back here, so poll a few times rather than checking only once.
+  for (let attempt = 0; attempt < 8; attempt++) {
+    await new Promise(r => setTimeout(r, 2500));
+    await refreshStatus();
+    if (currentUser.paymentStatus === "paid") {
+      banner.textContent = `Payment confirmed — you're on the ${currentUser.tier} plan.`;
+      banner.style.color = "var(--signal)";
+      setTimeout(() => banner.remove(), 4000);
+      return;
+    }
+  }
+  banner.textContent = "Still waiting on confirmation. If this doesn't update in a minute, check the payment went through on your end.";
 }
 
 /* ===========================================================
@@ -346,5 +375,6 @@ function formatDate(v) {
     return;
   }
   await refreshStatus();
+  await handlePaymentReturn();
   loadFeed();
 })();
