@@ -2,7 +2,7 @@
    CIPHERMIND — app.js (auth page)
    =========================================================== */
 
-const API_BASE = "https://script.google.com/macros/s/AKfycbwd2_lf7lnb8rY9t2NZSTcca-JZxUFHru6xCuC8-dNfh7MNIUjHhD7m9R-lgInZxEgtVw/exec";
+const API_BASE = "https://script.google.com/macros/s/AKfycbza9s-gysxJB1TxA8JCZzqYQtVL2S-douMxZDKeRtdILNLZyjJQo6uIzC8TeQvMypAKuA/exec";
 
 (function buildCipherWheel(){
   const PLAIN = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
