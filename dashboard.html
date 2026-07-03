@@ -3,786 +3,197 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cipher Enermind — The Vault</title>
-<meta name="description" content="A members' vault of ideas, mentors, and moves for young people building something real.">
+<title>CipherMind — Vault</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%230B0E17%22 stroke=%22%23C9A227%22 stroke-width=%224%22/><circle cx=%2250%22 cy=%2250%22 r=%2210%22 fill=%22%233FE0C5%22/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --ink:#0a0b0e;
-    --panel:#14161b;
-    --panel-2:#1c1f26;
-    --hairline:#2a2e37;
-    --brass:#c9a227;
-    --brass-bright:#e6c34d;
-    --teal:#23d2b5;
-    --paper:#ece6d6;
-    --muted:#8b909a;
-    --danger:#d9584c;
-    --radius:2px;
-    --serif: 'Fraunces', serif;
-    --mono: 'Space Mono', monospace;
-  }
-  *{box-sizing:border-box; margin:0; padding:0;}
-  html{scroll-behavior:smooth;}
-  body{
-    background:var(--ink);
-    color:var(--paper);
-    font-family:var(--serif);
-    line-height:1.5;
-    overflow-x:hidden;
-  }
-  @media (prefers-reduced-motion: reduce){
-    *{animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; scroll-behavior:auto !important;}
-  }
-
-  /* ---------- texture ---------- */
-  body::before{
-    content:"";
-    position:fixed; inset:0;
-    background-image:
-      linear-gradient(var(--hairline) 1px, transparent 1px),
-      linear-gradient(90deg, var(--hairline) 1px, transparent 1px);
-    background-size:64px 64px;
-    opacity:.05;
-    pointer-events:none;
-    z-index:0;
-  }
-  .noise{
-    position:fixed; inset:0; pointer-events:none; z-index:1; opacity:.035; mix-blend-mode:overlay;
-    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-  }
-
-  /* ---------- utility ---------- */
-  .wrap{max-width:1160px; margin:0 auto; padding:0 28px; position:relative; z-index:2;}
-  .mono{font-family:var(--mono);}
-  .eyebrow{
-    font-family:var(--mono); font-size:.72rem; letter-spacing:.22em; text-transform:uppercase;
-    color:var(--teal);
-  }
-  .stamp{
-    font-family:var(--mono); font-size:.68rem; letter-spacing:.14em; text-transform:uppercase;
-    color:var(--brass); border:1px solid var(--brass); padding:4px 10px; border-radius:var(--radius);
-    display:inline-block; transform:rotate(-3deg); opacity:.85;
-  }
-  section{position:relative; z-index:2;}
-  a{color:inherit;}
-  ::selection{background:var(--brass); color:var(--ink);}
-
-  /* ---------- nav ---------- */
-  header{
-    position:fixed; top:0; left:0; right:0; z-index:50;
-    background:rgba(10,11,14,.86); backdrop-filter:blur(10px);
-    border-bottom:1px solid var(--hairline);
-  }
-  nav.wrap{
-    display:flex; align-items:center; justify-content:space-between;
-    height:74px;
-  }
-  .brand{
-    font-family:var(--mono); font-weight:700; letter-spacing:.05em; font-size:1.02rem;
-    display:flex; align-items:center; gap:10px;
-  }
-  .brand .mark{
-    width:22px; height:22px; border:1.5px solid var(--brass); border-radius:50%;
-    display:flex; align-items:center; justify-content:center; position:relative;
-  }
-  .brand .mark::after{
-    content:""; width:2px; height:8px; background:var(--brass); position:absolute; top:2px; left:50%; transform:translateX(-50%);
-  }
-  .navlinks{display:flex; gap:32px; font-family:var(--mono); font-size:.78rem; letter-spacing:.06em;}
-  .navlinks a{text-decoration:none; color:var(--muted); transition:color .2s;}
-  .navlinks a:hover{color:var(--paper);}
-  .nav-cta{
-    font-family:var(--mono); font-size:.75rem; letter-spacing:.06em; text-transform:uppercase;
-    color:var(--ink); background:var(--brass); padding:10px 18px; border-radius:var(--radius);
-    text-decoration:none; border:1px solid var(--brass); transition:all .2s;
-  }
-  .nav-cta:hover{background:transparent; color:var(--brass);}
-  .navlinks-mobile{display:none;}
-  @media (max-width:820px){
-    .navlinks{display:none;}
-  }
-
-  /* ---------- hero ---------- */
-  .hero{
-    min-height:100vh; display:flex; flex-direction:column; justify-content:center;
-    padding-top:120px; padding-bottom:80px;
-    position:relative;
-  }
-  .hero-grid{
-    display:grid; grid-template-columns:1.1fr .9fr; gap:60px; align-items:center;
-  }
-  @media (max-width:900px){ .hero-grid{grid-template-columns:1fr;} }
-
-  .hero .eyebrow{margin-bottom:22px; display:flex; align-items:center; gap:10px;}
-  .hero .eyebrow::before{content:""; width:22px; height:1px; background:var(--teal);}
-
-  h1.decrypt{
-    font-family:var(--mono);
-    font-size:clamp(2rem, 5vw, 3.4rem);
-    line-height:1.08;
-    letter-spacing:-.01em;
-    color:var(--paper);
-    min-height:4.6em;
-  }
-  h1.decrypt .line{display:block;}
-  h1.decrypt .accent{color:var(--brass-bright);}
-
-  .hero p.sub{
-    font-family:var(--serif); font-size:1.18rem; color:var(--muted); max-width:44ch; margin-top:26px;
-    font-style:italic;
-  }
-  .hero-ctas{display:flex; gap:16px; margin-top:38px; flex-wrap:wrap;}
-  .btn{
-    font-family:var(--mono); font-size:.8rem; letter-spacing:.06em; text-transform:uppercase;
-    padding:15px 26px; border-radius:var(--radius); text-decoration:none; display:inline-flex; align-items:center; gap:10px;
-    transition:all .22s ease; cursor:pointer; border:1px solid transparent;
-  }
-  .btn-primary{background:var(--brass); color:var(--ink); border-color:var(--brass);}
-  .btn-primary:hover{background:var(--brass-bright); transform:translateY(-2px); box-shadow:0 10px 30px -12px rgba(201,162,39,.5);}
-  .btn-ghost{border-color:var(--hairline); color:var(--paper);}
-  .btn-ghost:hover{border-color:var(--teal); color:var(--teal);}
-
-  .hero-meta{display:flex; gap:34px; margin-top:56px; flex-wrap:wrap;}
-  .hero-meta div{border-left:1px solid var(--hairline); padding-left:14px;}
-  .hero-meta .num{font-family:var(--mono); font-size:1.5rem; color:var(--teal);}
-  .hero-meta .lbl{font-family:var(--mono); font-size:.68rem; color:var(--muted); letter-spacing:.08em; text-transform:uppercase; margin-top:4px;}
-
-  /* ---------- dial ---------- */
-  .dial-wrap{display:flex; align-items:center; justify-content:center; position:relative;}
-  .dial-wrap svg{width:100%; max-width:400px; height:auto;}
-  #dialRing{transform-origin:200px 200px; animation:spin 60s linear infinite;}
-  @keyframes spin{to{transform:rotate(360deg);}}
-  .dial-glow{
-    position:absolute; width:280px; height:280px; border-radius:50%;
-    background:radial-gradient(circle, rgba(35,210,181,.16), transparent 70%);
-    filter:blur(10px);
-  }
-
-  /* ---------- section shell ---------- */
-  .section-head{
-    display:flex; justify-content:space-between; align-items:flex-end; gap:24px;
-    margin-bottom:52px; padding-top:100px; border-top:1px solid var(--hairline);
-    flex-wrap:wrap;
-  }
-  .section-head h2{
-    font-family:var(--serif); font-weight:600; font-size:clamp(1.7rem, 3.4vw, 2.6rem);
-    max-width:16ch; margin-top:16px;
-  }
-  .section-head .file-no{font-family:var(--mono); font-size:.75rem; color:var(--muted);}
-  .section-head p{color:var(--muted); max-width:34ch; font-size:.95rem;}
-
-  .reveal{opacity:0; transform:translateY(24px); transition:opacity .7s ease, transform .7s ease;}
-  .reveal.in{opacity:1; transform:translateY(0);}
-
-  /* ---------- features (the vault contents) ---------- */
-  .files-grid{
-    display:grid; grid-template-columns:repeat(3, 1fr); gap:1px;
-    background:var(--hairline); border:1px solid var(--hairline);
-  }
-  @media (max-width:900px){ .files-grid{grid-template-columns:repeat(2, 1fr);} }
-  @media (max-width:600px){ .files-grid{grid-template-columns:1fr;} }
-  .file-card{
-    background:var(--panel); padding:34px 28px; position:relative; overflow:hidden;
-    transition:background .25s ease;
-  }
-  .file-card:hover{background:var(--panel-2);}
-  .file-card .tag{
-    font-family:var(--mono); font-size:.66rem; color:var(--brass); letter-spacing:.1em; text-transform:uppercase;
-  }
-  .file-card h3{font-family:var(--serif); font-size:1.25rem; font-weight:600; margin:14px 0 10px;}
-  .file-card p{color:var(--muted); font-size:.92rem;}
-  .file-card .idx{
-    position:absolute; top:20px; right:24px; font-family:var(--mono); font-size:.7rem; color:var(--hairline);
-  }
-  .file-card::before{
-    content:""; position:absolute; left:0; top:0; bottom:0; width:2px; background:transparent; transition:background .25s;
-  }
-  .file-card:hover::before{background:var(--teal);}
-
-  /* ---------- tiers ---------- */
-  .tiers{display:grid; grid-template-columns:repeat(3, 1fr); gap:22px;}
-  @media (max-width:900px){ .tiers{grid-template-columns:1fr; max-width:420px; margin:0 auto;} }
-  .tier{
-    background:var(--panel); border:1px solid var(--hairline); border-radius:var(--radius);
-    padding:36px 30px; display:flex; flex-direction:column; position:relative;
-  }
-  .tier.pro{border-color:var(--brass); background:linear-gradient(180deg, rgba(201,162,39,.07), var(--panel) 40%);}
-  .tier .clearance{
-    font-family:var(--mono); font-size:.66rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted);
-  }
-  .tier.pro .clearance{color:var(--brass);}
-  .tier h3{font-family:var(--serif); font-size:1.4rem; margin:10px 0 4px;}
-  .tier .price{font-family:var(--mono); font-size:2.1rem; color:var(--paper); margin:18px 0 6px;}
-  .tier .price span{font-size:.9rem; color:var(--muted);}
-  .tier .per{font-family:var(--mono); font-size:.7rem; color:var(--muted); margin-bottom:24px;}
-  .tier ul{list-style:none; flex:1; margin-bottom:28px;}
-  .tier li{
-    font-size:.9rem; color:var(--paper); padding:10px 0; border-top:1px solid var(--hairline);
-    display:flex; gap:10px; align-items:flex-start;
-  }
-  .tier li::before{content:"//"; color:var(--teal); font-family:var(--mono); font-size:.78rem; flex-shrink:0;}
-  .tier .pill{
-    position:absolute; top:-12px; right:26px; background:var(--brass); color:var(--ink);
-    font-family:var(--mono); font-size:.62rem; letter-spacing:.08em; text-transform:uppercase;
-    padding:4px 10px; border-radius:20px;
-  }
-  .tier .btn{justify-content:center; width:100%;}
-
-  /* ---------- process ---------- */
-  .process{display:grid; grid-template-columns:repeat(3, 1fr); gap:40px;}
-  @media (max-width:820px){ .process{grid-template-columns:1fr; gap:34px;} }
-  .step{position:relative; padding-left:52px;}
-  .step .n{
-    font-family:var(--mono); font-size:.85rem; color:var(--ink); background:var(--teal);
-    width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center;
-    position:absolute; left:0; top:0;
-  }
-  .step h4{font-family:var(--serif); font-size:1.15rem; margin-bottom:8px;}
-  .step p{color:var(--muted); font-size:.92rem;}
-
-  /* ---------- ledger literacy / warning ---------- */
-  .ledger{
-    background:var(--panel-2); border:1px solid var(--hairline); border-radius:var(--radius);
-    padding:52px; display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:center;
-  }
-  @media (max-width:820px){ .ledger{grid-template-columns:1fr; padding:34px;} }
-  .ledger h3{font-family:var(--serif); font-size:1.7rem; margin-bottom:16px;}
-  .ledger p{color:var(--muted); font-size:.96rem; margin-bottom:14px;}
-  .ledger .warn{
-    border-left:2px solid var(--danger); padding-left:16px; font-family:var(--mono); font-size:.82rem; color:var(--danger);
-  }
-  .ledger-list{display:flex; flex-direction:column; gap:0;}
-  .ledger-list div{
-    padding:16px 0; border-top:1px solid var(--hairline); display:flex; justify-content:space-between; align-items:center;
-    font-family:var(--mono); font-size:.82rem; color:var(--muted);
-  }
-  .ledger-list div:last-child{border-bottom:1px solid var(--hairline);}
-  .ledger-list span.ok{color:var(--teal);}
-
-  /* ---------- FAQ ---------- */
-  .faq-item{border-top:1px solid var(--hairline); padding:26px 0;}
-  .faq-item:last-child{border-bottom:1px solid var(--hairline);}
-  .faq-q{
-    display:flex; justify-content:space-between; align-items:center; cursor:pointer;
-    font-family:var(--serif); font-weight:600; font-size:1.05rem;
-  }
-  .faq-q .plus{font-family:var(--mono); color:var(--brass); font-size:1.3rem; transition:transform .25s;}
-  .faq-item.open .plus{transform:rotate(45deg);}
-  .faq-a{max-height:0; overflow:hidden; transition:max-height .3s ease;}
-  .faq-item.open .faq-a{max-height:220px;}
-  .faq-a p{color:var(--muted); padding-top:14px; font-size:.92rem; max-width:60ch;}
-
-  /* ---------- join / footer form ---------- */
-  .join{
-    background:var(--panel); border:1px solid var(--hairline); border-radius:var(--radius);
-    padding:56px; text-align:center;
-  }
-  @media (max-width:600px){ .join{padding:34px 22px;} }
-  .join h2{font-family:var(--serif); font-size:clamp(1.6rem,3.6vw,2.3rem); max-width:22ch; margin:0 auto 14px;}
-  .join p{color:var(--muted); max-width:48ch; margin:0 auto 32px;}
-  .join-form{display:flex; gap:12px; max-width:480px; margin:0 auto; flex-wrap:wrap; justify-content:center;}
-  .join-form input{
-    flex:1; min-width:220px; background:var(--ink); border:1px solid var(--hairline); border-radius:var(--radius);
-    padding:15px 16px; color:var(--paper); font-family:var(--mono); font-size:.85rem;
-  }
-  .join-form input:focus{outline:none; border-color:var(--teal);}
-  .join-status{font-family:var(--mono); font-size:.78rem; color:var(--muted); margin-top:16px; min-height:1.2em;}
-
-  footer{border-top:1px solid var(--hairline); padding:44px 0; margin-top:60px;}
-  .footer-grid{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;}
-  .footer-grid .brand{opacity:.8;}
-  .foot-links{display:flex; gap:22px; font-family:var(--mono); font-size:.75rem; color:var(--muted);}
-  .foot-links a{text-decoration:none;}
-  .foot-links a:hover{color:var(--paper);}
-  .disclaimer{
-    font-family:var(--mono); font-size:.7rem; color:var(--muted); max-width:900px; margin-top:22px; line-height:1.7; opacity:.75;
-  }
-
-  /* modal */
-  .modal-overlay{
-    position:fixed; inset:0; background:rgba(6,7,9,.82); backdrop-filter:blur(4px);
-    display:none; align-items:center; justify-content:center; z-index:100; padding:20px;
-  }
-  .modal-overlay.show{display:flex;}
-  .modal{
-    background:var(--panel); border:1px solid var(--brass); border-radius:var(--radius);
-    max-width:440px; width:100%; padding:38px; position:relative;
-  }
-  .modal .close{position:absolute; top:16px; right:18px; cursor:pointer; color:var(--muted); font-family:var(--mono);}
-  .modal h3{font-family:var(--serif); font-size:1.4rem; margin-bottom:8px;}
-  .modal p{color:var(--muted); font-size:.88rem; margin-bottom:22px;}
-  .modal-tiers{display:flex; flex-direction:column; gap:10px; margin-bottom:22px;}
-  .modal-tier-btn{
-    display:flex; justify-content:space-between; align-items:center; width:100%;
-    background:var(--panel-2); border:1px solid var(--hairline); color:var(--paper);
-    padding:14px 16px; border-radius:var(--radius); font-family:var(--mono); font-size:.82rem;
-    cursor:pointer; transition:border-color .2s;
-  }
-  .modal-tier-btn:hover{border-color:var(--brass);}
-  .modal-tier-btn.selected{border-color:var(--teal); color:var(--teal);}
-  .modal small{color:var(--muted); font-size:.72rem; display:block; margin-top:18px; line-height:1.6;}
-</style>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="app-body">
 
-<div class="noise"></div>
+<div class="app-shell">
 
-<header>
-  <nav class="wrap">
-    <div class="brand"><span class="mark"></span> CIPHER ENERMIND</div>
-    <div class="navlinks">
-      <a href="#inside">The Vault</a>
-      <a href="#tiers">Clearance</a>
-      <a href="#ledger">Ledger</a>
-      <a href="#faq">FAQ</a>
+  <!-- Sidebar -->
+  <aside class="side-nav">
+    <div class="side-nav__brand">
+      <span class="side-nav__mark">CM</span>
+      <span class="side-nav__name">Cipher<span>Mind</span></span>
     </div>
-    <a href="#tiers" class="nav-cta">Request Access</a>
-  </nav>
-</header>
 
-<main class="wrap">
+    <nav class="side-nav__links" id="navLinks">
+      <button class="nav-link is-active" data-view="feed">Feed</button>
+      <button class="nav-link" data-view="groups">Groups</button>
+      <button class="nav-link" data-view="ideas">Ideas</button>
+      <button class="nav-link" data-view="jobs">Jobs</button>
+      <button class="nav-link" data-view="upgrade">Upgrade</button>
+    </nav>
 
-  <!-- ============ HERO ============ -->
-  <section class="hero">
-    <div class="hero-grid">
-      <div>
-        <div class="eyebrow">FILE 001 // CLASSIFIED YOUTH DOSSIER</div>
-        <h1 class="decrypt" id="decryptHeadline"></h1>
-        <p class="sub">Not a course. Not a guru. A locked room of ideas, mentors, and moves — opened one clearance level at a time.</p>
-        <div class="hero-ctas">
-          <a href="#tiers" class="btn btn-primary">Unlock the vault →</a>
-          <a href="#inside" class="btn btn-ghost">See what's inside</a>
+    <div class="side-nav__user">
+      <div class="user-chip">
+        <span class="user-chip__name" id="userName">—</span>
+        <span class="tier-badge" id="userTierBadge">none</span>
+      </div>
+      <button class="linklike" id="logoutBtn">Sign out</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="app-main">
+
+    <!-- FEED -->
+    <section class="view view--active" id="viewFeed">
+      <header class="view__header">
+        <div>
+          <p class="view__eyebrow">Channel</p>
+          <h1 class="view__title">Feed</h1>
         </div>
-        <div class="hero-meta">
-          <div><div class="num">03</div><div class="lbl">Clearance levels</div></div>
-          <div><div class="num">KSH 100</div><div class="lbl">Entry point</div></div>
-          <div><div class="num">24/7</div><div class="lbl">Circles open</div></div>
+        <button class="btn btn--primary btn--sm" id="composeBtn">+ New post</button>
+      </header>
+
+      <form class="compose-card" id="composeForm" hidden>
+        <select id="composeType" class="select">
+          <option value="text">Text</option>
+          <option value="image">Image URL</option>
+          <option value="video">Video URL</option>
+        </select>
+        <input type="text" id="composeContent" placeholder="Write something, or paste an image/video URL...">
+        <input type="text" id="composeCaption" placeholder="Caption (optional)">
+        <div class="compose-card__actions">
+          <button type="button" class="linklike" id="composeCancel">Cancel</button>
+          <button type="submit" class="btn btn--primary btn--sm">Post</button>
         </div>
-      </div>
-      <div class="dial-wrap">
-        <div class="dial-glow"></div>
-        <svg viewBox="0 0 400 400">
-          <g id="dialRing">
-            <circle cx="200" cy="200" r="170" fill="none" stroke="#2a2e37" stroke-width="1"/>
-            <circle cx="200" cy="200" r="170" fill="none" stroke="#c9a227" stroke-width="1.4" stroke-dasharray="4 10" opacity="0.7"/>
-            <g id="ticks"></g>
-          </g>
-          <circle cx="200" cy="200" r="122" fill="none" stroke="#2a2e37" stroke-width="1"/>
-          <circle cx="200" cy="200" r="70" fill="#14161b" stroke="#c9a227" stroke-width="1.2"/>
-          <text x="200" y="196" text-anchor="middle" font-family="Space Mono" font-size="13" fill="#e6c34d" letter-spacing="2">CIPHER</text>
-          <text x="200" y="214" text-anchor="middle" font-family="Space Mono" font-size="9" fill="#8b909a" letter-spacing="3">ENERMIND</text>
-          <line x1="200" y1="200" x2="200" y2="90" stroke="#23d2b5" stroke-width="2" id="dialNeedle" style="transform-origin:200px 200px;"/>
-          <circle cx="200" cy="200" r="4" fill="#23d2b5"/>
-        </svg>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ INSIDE THE VAULT ============ -->
-  <section id="inside">
-    <div class="section-head reveal">
-      <div>
-        <div class="eyebrow">FILE 002 // CONTENTS</div>
-        <h2>Six drawers. Open the ones your clearance allows.</h2>
-      </div>
-      <p>Every member gets a starting drawer. Higher clearance opens the rest — no filler features, no "coming soon" padding.</p>
-    </div>
-
-    <div class="files-grid reveal">
-      <div class="file-card">
-        <div class="idx">01</div>
-        <div class="tag">Library</div>
-        <h3>The Stacks</h3>
-        <p>Books, breakdowns, and field notes on building something from nothing — written for people without a head start, not despite it.</p>
-      </div>
-      <div class="file-card">
-        <div class="idx">02</div>
-        <div class="tag">Broadcast</div>
-        <h3>The Reel</h3>
-        <p>Short videos and image drops — real examples, real numbers, real mistakes. No stock-photo hustle content.</p>
-      </div>
-      <div class="file-card">
-        <div class="idx">03</div>
-        <div class="tag">Community</div>
-        <h3>Circles</h3>
-        <p>Start or join a Circle — a small working group with its own space to plan, post, and hold each other accountable.</p>
-      </div>
-      <div class="file-card">
-        <div class="idx">04</div>
-        <div class="tag">Live</div>
-        <h3>Sessions</h3>
-        <p>Scheduled video sessions for Q&A, workshops, and Circle check-ins — calendar invite and link land in your inbox.</p>
-      </div>
-      <div class="file-card">
-        <div class="idx">05</div>
-        <div class="tag">Ledger</div>
-        <h3>Money Sense</h3>
-        <p>Plain-language lessons on budgeting, saving, and reading an opportunity properly — built to slow you down before you lose money, not speed you toward a "tip."</p>
-      </div>
-      <div class="file-card">
-        <div class="idx">06</div>
-        <div class="tag">Bridges</div>
-        <h3>Job Board</h3>
-        <p>Openings, gigs, and internships shared by members and partners — sorted by what you're actually qualified to start now.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ TIERS ============ -->
-  <section id="tiers">
-    <div class="section-head reveal">
-      <div>
-        <div class="eyebrow">FILE 003 // CLEARANCE LEVELS</div>
-        <h2>Pick your level. Upgrade whenever.</h2>
-      </div>
-      <p>One-time entry fee per level, paid securely via Pesapal. No hidden subscriptions.</p>
-    </div>
-
-    <div class="tiers reveal">
-      <div class="tier" data-tier="Basic" data-price="100">
-        <div class="clearance">Level 01</div>
-        <h3>Basic</h3>
-        <div class="price">KSH 100</div>
-        <div class="per">one-time · lifetime access to this level</div>
-        <ul>
-          <li>The Stacks — full library access</li>
-          <li>The Reel — video &amp; image drops</li>
-          <li>Join up to 2 Circles</li>
-          <li>Money Sense lessons</li>
-        </ul>
-        <a href="#" class="btn btn-ghost open-modal" data-tier="Basic" data-price="100">Choose Basic</a>
-      </div>
-
-      <div class="tier pro" data-tier="Pro" data-price="300">
-        <div class="pill">Most chosen</div>
-        <div class="clearance">Level 02</div>
-        <h3>Pro</h3>
-        <div class="price">KSH 300</div>
-        <div class="per">one-time · lifetime access to this level</div>
-        <ul>
-          <li>Everything in Basic</li>
-          <li>Unlimited Circles + start your own</li>
-          <li>Live Sessions access</li>
-          <li>Job Board — apply &amp; post</li>
-        </ul>
-        <a href="#" class="btn btn-primary open-modal" data-tier="Pro" data-price="300">Choose Pro</a>
-      </div>
-
-      <div class="tier" data-tier="Elite" data-price="500">
-        <div class="clearance">Level 03</div>
-        <h3>Vault Elite</h3>
-        <div class="price">KSH 500</div>
-        <div class="per">one-time · lifetime access to this level</div>
-        <ul>
-          <li>Everything in Pro</li>
-          <li>Priority seat in Live Sessions</li>
-          <li>Direct message to mentors in-session</li>
-          <li>Early access to new drawers</li>
-        </ul>
-        <a href="#" class="btn btn-ghost open-modal" data-tier="Elite" data-price="500">Choose Elite</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ HOW ACCESS WORKS ============ -->
-  <section>
-    <div class="section-head reveal">
-      <div>
-        <div class="eyebrow">FILE 004 // ACCESS PROTOCOL</div>
-        <h2>Three steps to get in.</h2>
-      </div>
-      <p>The whole flow, start to finish.</p>
-    </div>
-    <div class="process reveal">
-      <div class="step">
-        <div class="n">1</div>
-        <h4>Choose a level</h4>
-        <p>Pick Basic, Pro, or Vault Elite based on what you want unlocked first.</p>
-      </div>
-      <div class="step">
-        <div class="n">2</div>
-        <h4>Pay via Pesapal</h4>
-        <p>Enter your details and complete a secure Pesapal checkout — M-Pesa, card, or bank.</p>
-      </div>
-      <div class="step">
-        <div class="n">3</div>
-        <h4>Get your key</h4>
-        <p>Access details land by email/SMS within minutes, plus your first Circle invite.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ LEDGER / MONEY SENSE ============ -->
-  <section id="ledger">
-    <div class="section-head reveal">
-      <div>
-        <div class="eyebrow">FILE 005 // MONEY SENSE</div>
-        <h2>We teach you to slow down, not to chase.</h2>
-      </div>
-    </div>
-    <div class="ledger reveal">
-      <div>
-        <h3>Why "the quick win" empties pockets</h3>
-        <p>Betting apps, forex "signal" groups, and get-rich-quick schemes are built to feel like opportunity. Money Sense breaks down how odds, fees, and hype actually work — in plain language, with real numbers — so you can see a bad bet before you make it.</p>
-        <p class="warn">This is education, not financial advice. We don't sell tips, signals, or predictions — and we don't take a cut of anything you invest.</p>
-      </div>
-      <div class="ledger-list">
-        <div><span>Reading an opportunity properly</span><span class="ok">Included</span></div>
-        <div><span>Budgeting &amp; saving basics</span><span class="ok">Included</span></div>
-        <div><span>How gambling odds are built to lose</span><span class="ok">Included</span></div>
-        <div><span>Guaranteed returns / hot tips</span><span>Not offered — ever</span></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ FAQ ============ -->
-  <section id="faq">
-    <div class="section-head reveal">
-      <div>
-        <div class="eyebrow">FILE 006 // BRIEFING</div>
-        <h2>Before you request access.</h2>
-      </div>
-    </div>
-    <div class="reveal">
-      <div class="faq-item">
-        <div class="faq-q">Is the KSH fee refundable?<span class="plus">+</span></div>
-        <div class="faq-a"><p>Each level is a one-time payment for lifetime access to that level's drawers. Refund requests are handled case-by-case — reach out within 48 hours of payment.</p></div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">Do you give investment tips?<span class="plus">+</span></div>
-        <div class="faq-a"><p>No. Money Sense teaches how to think about risk, saving, and opportunity — it never tells you what to buy, bet, or invest in.</p></div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">How do Live Sessions work?<span class="plus">+</span></div>
-        <div class="faq-a"><p>Sessions run on Google Meet on a published schedule. Pro and Elite members get the calendar invite automatically after joining.</p></div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">Can I start my own Circle?<span class="plus">+</span></div>
-        <div class="faq-a"><p>Yes, from Pro level up. A Circle gets its own private space to plan, post updates, and track progress together.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ JOIN / WAITLIST ============ -->
-  <section style="padding-top:100px;">
-    <div class="join reveal">
-      <div class="eyebrow" style="justify-content:center; display:flex;">FILE 000 // BEFORE YOU GO IN</div>
-      <h2>Not ready to pay yet? Get on the list.</h2>
-      <p>Leave your email and we'll send you one real lesson from the vault, free — no card required.</p>
-      <form class="join-form" id="waitlistForm">
-        <input type="email" id="waitlistEmail" placeholder="you@email.com" required>
-        <button type="submit" class="btn btn-primary">Notify me</button>
+        <p class="form-error" id="composeError"></p>
       </form>
-      <div class="join-status" id="waitlistStatus"></div>
-    </div>
-  </section>
 
-</main>
+      <div class="lock-notice" id="feedLock" hidden>
+        <p><span class="brass">Posting</span> is a Pro/Premium feature. You can still read the feed.</p>
+      </div>
 
-<footer>
-  <div class="wrap">
-    <div class="footer-grid">
-      <div class="brand"><span class="mark"></span> CIPHER ENERMIND</div>
-      <div class="foot-links">
-        <a href="#inside">The Vault</a>
-        <a href="#tiers">Clearance</a>
-        <a href="#faq">FAQ</a>
-        <a href="mailto:hello@cipherenermind.com">Contact</a>
-      </div>
-    </div>
-    <p class="disclaimer">
-      Cipher Enermind provides educational content and community tools only. Nothing on this site is financial, legal, or investment advice, and no returns are promised or guaranteed. Payments are processed by Pesapal; Cipher Enermind never stores your card or M-Pesa details. This page is a front-end demo — see build notes in the source file for wiring up real Pesapal checkout and Google Sheets/Apps Script before going live.
-    </p>
-  </div>
-</footer>
+      <div class="card-list" id="feedList"><p class="empty-state">Loading the feed…</p></div>
+    </section>
 
-<!-- ============ PAYMENT MODAL ============ -->
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal">
-    <div class="close" id="modalClose">✕ CLOSE</div>
-    <h3 id="modalTitle">Confirm your level</h3>
-    <p>You're requesting <strong id="modalTierName">Basic</strong> clearance — <span id="modalPrice">KSH 100</span>, one-time.</p>
-    <form id="modalForm">
-      <div style="margin-bottom:14px;">
-        <input type="text" placeholder="Full name" required style="width:100%; background:var(--ink); border:1px solid var(--hairline); color:var(--paper); font-family:var(--mono); font-size:.85rem; padding:14px; border-radius:2px;">
+    <!-- GROUPS -->
+    <section class="view" id="viewGroups">
+      <header class="view__header">
+        <div>
+          <p class="view__eyebrow">Circles</p>
+          <h1 class="view__title">Groups</h1>
+        </div>
+        <button class="btn btn--primary btn--sm" id="newGroupBtn">+ New group</button>
+      </header>
+
+      <form class="compose-card" id="groupForm" hidden>
+        <input type="text" id="groupName" placeholder="Group name">
+        <input type="text" id="groupDesc" placeholder="What's this group about?">
+        <div class="compose-card__actions">
+          <button type="button" class="linklike" id="groupCancel">Cancel</button>
+          <button type="submit" class="btn btn--primary btn--sm">Create</button>
+        </div>
+        <p class="form-error" id="groupError"></p>
+      </form>
+
+      <div class="card-list" id="groupList"><p class="empty-state">Loading groups…</p></div>
+    </section>
+
+    <!-- GROUP DETAIL -->
+    <section class="view" id="viewGroupDetail">
+      <header class="view__header">
+        <div>
+          <p class="view__eyebrow"><button class="linklike" id="backToGroups">← Groups</button></p>
+          <h1 class="view__title" id="groupDetailName">Group</h1>
+          <p class="view__sub" id="groupDetailDesc"></p>
+        </div>
+        <div class="view__header-actions">
+          <button class="btn btn--ghost btn--sm" id="scheduleMeetingBtn">Schedule Meet</button>
+          <a class="btn btn--primary btn--sm" id="joinMeetLink" href="#" target="_blank" hidden>Join meeting</a>
+        </div>
+      </header>
+
+      <form class="compose-card" id="meetingForm" hidden>
+        <input type="text" id="meetingTitle" placeholder="Meeting title">
+        <input type="datetime-local" id="meetingStart">
+        <input type="number" id="meetingDuration" placeholder="Duration (minutes)" value="30" min="10">
+        <div class="compose-card__actions">
+          <button type="button" class="linklike" id="meetingCancel">Cancel</button>
+          <button type="submit" class="btn btn--primary btn--sm">Create meeting</button>
+        </div>
+        <p class="form-error" id="meetingError"></p>
+      </form>
+
+      <div class="card-list" id="groupPostList"></div>
+    </section>
+
+    <!-- IDEAS -->
+    <section class="view" id="viewIdeas">
+      <header class="view__header">
+        <div>
+          <p class="view__eyebrow">Signal</p>
+          <h1 class="view__title">Ideas</h1>
+        </div>
+      </header>
+      <p class="disclaimer">Educational notes on money and building things — not financial advice, and no
+        outcome is guaranteed. Do your own research before putting money into anything.</p>
+      <div class="card-list" id="ideasList"><p class="empty-state">Loading…</p></div>
+    </section>
+
+    <!-- JOBS -->
+    <section class="view" id="viewJobs">
+      <header class="view__header">
+        <div>
+          <p class="view__eyebrow">Openings</p>
+          <h1 class="view__title">Jobs</h1>
+        </div>
+      </header>
+      <div class="card-list" id="jobsList"><p class="empty-state">Loading…</p></div>
+    </section>
+
+    <!-- UPGRADE -->
+    <section class="view" id="viewUpgrade">
+      <header class="view__header">
+        <div>
+          <p class="view__eyebrow">Access</p>
+          <h1 class="view__title">Upgrade</h1>
+        </div>
+      </header>
+
+      <div class="tier-grid">
+        <div class="tier-card" data-tier="basic">
+          <p class="tier-card__name">Basic</p>
+          <p class="tier-card__price">KSh 100</p>
+          <ul class="tier-card__features">
+            <li>Read the feed</li>
+            <li>Browse ideas &amp; jobs</li>
+          </ul>
+          <button class="btn btn--ghost btn--sm pay-btn" data-tier="basic">Pay with Pesapal</button>
+        </div>
+        <div class="tier-card" data-tier="pro">
+          <p class="tier-card__name">Pro</p>
+          <p class="tier-card__price">KSh 300</p>
+          <ul class="tier-card__features">
+            <li>Everything in Basic</li>
+            <li>Post to the feed</li>
+            <li>Join groups</li>
+          </ul>
+          <button class="btn btn--ghost btn--sm pay-btn" data-tier="pro">Pay with Pesapal</button>
+        </div>
+        <div class="tier-card tier-card--highlight" data-tier="premium">
+          <p class="tier-card__name">Premium</p>
+          <p class="tier-card__price">KSh 500</p>
+          <ul class="tier-card__features">
+            <li>Everything in Pro</li>
+            <li>Create groups</li>
+            <li>Schedule Google Meet sessions</li>
+          </ul>
+          <button class="btn btn--primary btn--sm pay-btn" data-tier="premium">Pay with Pesapal</button>
+        </div>
       </div>
-      <div style="margin-bottom:14px;">
-        <input type="tel" placeholder="M-Pesa phone number" required style="width:100%; background:var(--ink); border:1px solid var(--hairline); color:var(--paper); font-family:var(--mono); font-size:.85rem; padding:14px; border-radius:2px;">
-      </div>
-      <div style="margin-bottom:6px;">
-        <input type="email" placeholder="Email" required style="width:100%; background:var(--ink); border:1px solid var(--hairline); color:var(--paper); font-family:var(--mono); font-size:.85rem; padding:14px; border-radius:2px;">
-      </div>
-      <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:16px;">Continue to Pesapal →</button>
-    </form>
-    <small>This demo form does not process real payments. Wire it to a Google Apps Script endpoint that calls the Pesapal API server-side — see the comment block at the bottom of this file's script for the exact steps.</small>
-  </div>
+      <p class="form-error" id="upgradeError"></p>
+    </section>
+
+  </main>
 </div>
 
-<script>
-/* ---------------- decrypt headline ---------------- */
-const headlineFinal = ["THE PLAYBOOK", "THEY NEVER", "HANDED YOU."];
-const chars = "!<>-_\\/[]{}—=+*^?#________";
-const headlineEl = document.getElementById('decryptHeadline');
-
-function scrambleLine(el, finalText, delay){
-  return new Promise(resolve=>{
-    let frame = 0;
-    const totalFrames = 22;
-    const iv = setInterval(()=>{
-      let out = "";
-      for(let i=0;i<finalText.length;i++){
-        if(finalText[i] === " "){ out += " "; continue; }
-        const revealPoint = (i / finalText.length) * totalFrames;
-        if(frame > revealPoint + 6){
-          out += finalText[i];
-        } else if(frame > revealPoint){
-          out += chars[Math.floor(Math.random()*chars.length)];
-        } else {
-          out += " ";
-        }
-      }
-      el.textContent = out;
-      frame++;
-      if(frame > totalFrames + 8){
-        clearInterval(iv);
-        el.textContent = finalText;
-        resolve();
-      }
-    }, 28);
-  });
-}
-
-async function runDecrypt(){
-  for(let i=0;i<headlineFinal.length;i++){
-    const line = document.createElement('span');
-    line.className = 'line';
-    if(i === headlineFinal.length - 1) line.classList.add('accent');
-    headlineEl.appendChild(line);
-    await scrambleLine(line, headlineFinal[i]);
-  }
-}
-runDecrypt();
-
-/* ---------------- dial ticks + needle drift ---------------- */
-const ticksGroup = document.getElementById('ticks');
-for(let i=0;i<36;i++){
-  const angle = (i / 36) * 360;
-  const tick = document.createElementNS("http://www.w3.org/2000/svg","line");
-  const r1 = 158, r2 = i % 3 === 0 ? 145 : 152;
-  const rad = angle * Math.PI/180;
-  tick.setAttribute("x1", 200 + r1*Math.cos(rad));
-  tick.setAttribute("y1", 200 + r1*Math.sin(rad));
-  tick.setAttribute("x2", 200 + r2*Math.cos(rad));
-  tick.setAttribute("y2", 200 + r2*Math.sin(rad));
-  tick.setAttribute("stroke", "#8b909a");
-  tick.setAttribute("stroke-width", "1");
-  ticksGroup.appendChild(tick);
-}
-let needleAngle = 0;
-setInterval(()=>{
-  needleAngle += (Math.random()*40 - 20);
-  document.getElementById('dialNeedle').style.transform = `rotate(${needleAngle}deg)`;
-}, 2600);
-
-/* ---------------- scroll reveal ---------------- */
-const revealEls = document.querySelectorAll('.reveal');
-const io = new IntersectionObserver((entries)=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
-  });
-}, {threshold:.15});
-revealEls.forEach(el=>io.observe(el));
-
-/* ---------------- FAQ accordion ---------------- */
-document.querySelectorAll('.faq-item').forEach(item=>{
-  item.querySelector('.faq-q').addEventListener('click', ()=>{
-    const wasOpen = item.classList.contains('open');
-    document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
-    if(!wasOpen) item.classList.add('open');
-  });
-});
-
-/* ---------------- payment modal ---------------- */
-const overlay = document.getElementById('modalOverlay');
-const modalTierName = document.getElementById('modalTierName');
-const modalPrice = document.getElementById('modalPrice');
-document.querySelectorAll('.open-modal').forEach(btn=>{
-  btn.addEventListener('click', (e)=>{
-    e.preventDefault();
-    modalTierName.textContent = btn.dataset.tier;
-    modalPrice.textContent = "KSH " + btn.dataset.price;
-    overlay.classList.add('show');
-  });
-});
-document.getElementById('modalClose').addEventListener('click', ()=> overlay.classList.remove('show'));
-overlay.addEventListener('click', (e)=>{ if(e.target === overlay) overlay.classList.remove('show'); });
-
-document.getElementById('modalForm').addEventListener('submit', (e)=>{
-  e.preventDefault();
-  alert("Demo only: wire APPS_SCRIPT_URL below to a real Pesapal checkout before launch.");
-  overlay.classList.remove('show');
-});
-
-/* ---------------- waitlist form ---------------- */
-document.getElementById('waitlistForm').addEventListener('submit', async (e)=>{
-  e.preventDefault();
-  const status = document.getElementById('waitlistStatus');
-  const email = document.getElementById('waitlistEmail').value;
-  const APPS_SCRIPT_URL = ""; // paste your deployed Apps Script Web App URL here
-
-  if(!APPS_SCRIPT_URL){
-    status.textContent = "Not connected yet — add your Apps Script URL in the code to go live.";
-    return;
-  }
-  status.textContent = "Sending...";
-  try{
-    await fetch(APPS_SCRIPT_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({email, joinedAt: new Date().toISOString()})
-    });
-    status.textContent = "You're in. Check your inbox soon.";
-    document.getElementById('waitlistEmail').value = "";
-  }catch(err){
-    status.textContent = "Something went wrong — try again.";
-  }
-});
-</script>
-
-<!--
-=====================================================================
-BUILD NOTES — read before going live
-=====================================================================
-This file is a static front end only. It cannot safely hold Pesapal
-secret keys or verify payments — anyone can view page source. To make
-payments real:
-
-1. Create a Google Sheet with tabs: Users, Payments, Circles, Waitlist.
-2. Write a Google Apps Script bound to that sheet, deployed as a Web
-   App (Execute as: Me, Who has access: Anyone). It should:
-     - Expose a doPost(e) that receives {name, phone, email, tier, price}
-     - Call Pesapal's Auth + SubmitOrderRequest API server-side, using
-       your Pesapal consumer key/secret stored in Script Properties
-       (never in this HTML file)
-     - On Pesapal's IPN callback, mark the row in Payments as PAID and
-       append the user to Users with their unlocked tier
-     - Return the Pesapal redirect_url so the browser can send the
-       user to the real Pesapal checkout page
-3. Replace the alert() in the modal submit handler above with a fetch()
-   to that Web App URL, then redirect to the returned Pesapal URL.
-4. For Circles-as-sheets: have the same Apps Script create a new tab
-   per Circle on request, and use the Sheets API to read/write posts.
-5. For Sessions: create Google Calendar events via Apps Script's
-   CalendarApp, and email the Meet link to paid members only.
-
-None of this requires a paid server — Apps Script's free tier covers
-early-stage volume. Revisit once you have real transaction volume.
-=====================================================================
--->
-
+<script src="dashboard.js"></script>
 </body>
 </html>
