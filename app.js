@@ -1,20 +1,12 @@
 /* ===========================================================
-   CIPHERMIND — app.js
+   CIPHERMIND — app.js (auth page)
    =========================================================== */
 
-/**
- * 1) DEPLOY the included apps-script.gs as a Google Apps Script Web App
- *    (see README.md for exact steps).
- * 2) PASTE the resulting /exec URL below.
- */
-const API_BASE = "https://script.google.com/macros/s/AKfycbyFK95WDSVfoklIM9m7ieDmHz7IEcFxJpT1e8oMYA5Qj_9daTH3o8WPjk4aLdXl4KUtkw/exec";
+const API_BASE = "https://script.google.com/macros/s/AKfycbwd2_lf7lnb8rY9t2NZSTcca-JZxUFHru6xCuC8-dNfh7MNIUjHhD7m9R-lgInZxEgtVw/exec";
 
-/* ===========================================================
-   Cipher wheel — builds the two letter rings as SVG <text> nodes
-   =========================================================== */
 (function buildCipherWheel(){
   const PLAIN = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  const CIPHER = "QWERTYUIOPASDFGHJKLZXCVBNM"; // fixed substitution, purely decorative
+  const CIPHER = "QWERTYUIOPASDFGHJKLZXCVBNM";
 
   const cx = 160, cy = 160;
   const outerR = 138, innerR = 104;
@@ -37,22 +29,18 @@ const API_BASE = "https://script.google.com/macros/s/AKfycbyFK95WDSVfoklIM9m7ieD
 
   const specCipher = document.getElementById("specCipher");
   if (specCipher){
-    // show a short live sample of the substitution mapping
     const sample = "MIND";
     const mapped = sample.split("").map(ch => CIPHER[PLAIN.indexOf(ch)]).join("");
     specCipher.textContent = `${sample} → ${mapped}`;
   }
 })();
 
-/* ===========================================================
-   Decrypt-reveal text effect for the tagline
-   =========================================================== */
 (function decryptReveal(){
   const el = document.getElementById("tagline");
   if (!el) return;
   const finalText = el.dataset.text || el.textContent;
   const glyphs = "!<>-_\\/[]{}—=+*^?#________";
-  const duration = 900; // ms
+  const duration = 900;
   const stepMs = 28;
   let frame = 0;
   const totalFrames = Math.ceil(duration / stepMs);
@@ -75,9 +63,6 @@ const API_BASE = "https://script.google.com/macros/s/AKfycbyFK95WDSVfoklIM9m7ieD
   }, stepMs);
 })();
 
-/* ===========================================================
-   Tab switching (Sign in / Create account)
-   =========================================================== */
 const tabLogin = document.getElementById("tabLogin");
 const tabRegister = document.getElementById("tabRegister");
 const panelLogin = document.getElementById("panelLogin");
@@ -101,9 +86,6 @@ document.querySelectorAll("[data-switch]").forEach(btn => {
   btn.addEventListener("click", () => switchTo(btn.dataset.switch));
 });
 
-/* ===========================================================
-   Show / hide passphrase
-   =========================================================== */
 document.querySelectorAll(".field__toggle").forEach(btn => {
   btn.addEventListener("click", () => {
     const input = document.getElementById(btn.dataset.toggleFor);
@@ -113,9 +95,6 @@ document.querySelectorAll(".field__toggle").forEach(btn => {
   });
 });
 
-/* ===========================================================
-   Password strength meter ("key strength")
-   =========================================================== */
 const registerPassword = document.getElementById("registerPassword");
 const strengthLabel = document.getElementById("strengthLabel");
 const bars = Array.from(document.querySelectorAll(".strength__bar"));
@@ -126,7 +105,7 @@ function scorePassword(pw){
   if (pw.length >= 12) score++;
   if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) score++;
   if (/[0-9]/.test(pw) && /[^A-Za-z0-9]/.test(pw)) score++;
-  return score; // 0-4
+  return score;
 }
 
 registerPassword?.addEventListener("input", () => {
@@ -143,12 +122,6 @@ registerPassword?.addEventListener("input", () => {
   strengthLabel.textContent = label;
 });
 
-/* ===========================================================
-   Crypto helpers — SHA-256 hashing done client-side via WebCrypto.
-   NOTE: this is a lightweight deterrent against storing plaintext
-   passwords in the Sheet, NOT a substitute for a real auth backend
-   (bcrypt/argon2 + salted server-side hashing). See README.md.
-   =========================================================== */
 async function sha256Hex(message){
   const data = new TextEncoder().encode(message);
   const hashBuffer = await crypto.subtle.digest("SHA-256", data);
@@ -162,11 +135,6 @@ function randomSalt(len = 16){
   return Array.from(bytes).map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
-/* ===========================================================
-   API calls to the Apps Script backend.
-   Sent as text/plain to avoid a CORS preflight (Apps Script
-   Web Apps don't handle OPTIONS). Body is JSON-stringified.
-   =========================================================== */
 async function apiCall(action, payload){
   if (!API_BASE || API_BASE.startsWith("PASTE_")){
     document.getElementById("configWarning").hidden = false;
@@ -191,9 +159,6 @@ async function fetchSalt(email){
   return data.salt;
 }
 
-/* ===========================================================
-   Form: Register
-   =========================================================== */
 const panelRegisterForm = document.getElementById("panelRegister");
 const registerError = document.getElementById("registerError");
 const registerSuccess = document.getElementById("registerSuccess");
@@ -233,9 +198,6 @@ panelRegisterForm.addEventListener("submit", async (e) => {
   }
 });
 
-/* ===========================================================
-   Form: Login
-   =========================================================== */
 const panelLoginForm = document.getElementById("panelLogin");
 const loginError = document.getElementById("loginError");
 const loginSubmit = document.getElementById("loginSubmit");
