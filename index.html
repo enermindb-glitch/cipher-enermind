@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CipherMind — Access</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%230B0E17%22 stroke=%22%23C9A227%22 stroke-width=%224%22/><circle cx=%2250%22 cy=%2250%22 r=%2210%22 fill=%22%233FE0C5%22/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="stage">
+
+  <!-- LEFT: identity panel -->
+  <section class="identity-panel" aria-hidden="false">
+    <div class="identity-panel__glow"></div>
+
+    <div class="wordmark">
+      <svg class="wheel" viewBox="0 0 320 320" role="img" aria-label="CipherMind cipher wheel logo">
+        <g id="wheelOuter" class="wheel__ring wheel__ring--outer"></g>
+        <g id="wheelInner" class="wheel__ring wheel__ring--inner"></g>
+        <circle cx="160" cy="160" r="58" class="wheel__hub"></circle>
+        <circle cx="160" cy="160" r="58" class="wheel__hub-ring"></circle>
+        <text x="160" y="153" class="wheel__hub-label">CM</text>
+        <text x="160" y="172" class="wheel__hub-sub">v1</text>
+        <line x1="160" y1="8" x2="160" y2="28" class="wheel__pointer"></line>
+      </svg>
+    </div>
+
+    <h1 class="brand-name">Cipher<span>Mind</span></h1>
+
+    <p class="tagline" id="tagline" data-text="Your mind, encrypted.">Your mind, encrypted.</p>
+
+    <dl class="specs">
+      <div class="specs__row">
+        <dt>cipher</dt>
+        <dd id="specCipher">— — — — — —</dd>
+      </div>
+      <div class="specs__row">
+        <dt>status</dt>
+        <dd><span class="dot dot--live"></span> channel open</dd>
+      </div>
+    </dl>
+  </section>
+
+  <!-- RIGHT: auth panel -->
+  <section class="auth-panel">
+    <div class="auth-card">
+
+      <div class="tabs" role="tablist" aria-label="Authentication mode">
+        <button class="tab" id="tabLogin" role="tab" aria-selected="true" aria-controls="panelLogin">Sign in</button>
+        <button class="tab" id="tabRegister" role="tab" aria-selected="false" aria-controls="panelRegister">Create account</button>
+        <span class="tabs__indicator" id="tabIndicator"></span>
+      </div>
+
+      <!-- LOGIN -->
+      <form class="panel panel--active" id="panelLogin" role="tabpanel" aria-labelledby="tabLogin" novalidate>
+        <p class="panel__eyebrow">01 — Authenticate</p>
+        <h2 class="panel__title">Welcome back</h2>
+
+        <label class="field">
+          <span class="field__label">Email</span>
+          <input type="email" name="email" id="loginEmail" autocomplete="email" required placeholder="you@domain.com">
+        </label>
+
+        <label class="field">
+          <span class="field__label">Passphrase</span>
+          <div class="field__input-row">
+            <input type="password" name="password" id="loginPassword" autocomplete="current-password" required placeholder="••••••••••••">
+            <button type="button" class="field__toggle" data-toggle-for="loginPassword" aria-label="Show passphrase">show</button>
+          </div>
+        </label>
+
+        <p class="form-error" id="loginError" role="alert" aria-live="polite"></p>
+
+        <button type="submit" class="btn btn--primary" id="loginSubmit">
+          <span class="btn__label">Decrypt session</span>
+          <span class="btn__spinner" aria-hidden="true"></span>
+        </button>
+
+        <p class="panel__footnote">No account yet? <button type="button" class="linklike" data-switch="register">Create one</button></p>
+      </form>
+
+      <!-- REGISTER -->
+      <form class="panel" id="panelRegister" role="tabpanel" aria-labelledby="tabRegister" novalidate hidden>
+        <p class="panel__eyebrow">01 — Enroll</p>
+        <h2 class="panel__title">Generate a new key</h2>
+
+        <label class="field">
+          <span class="field__label">Name</span>
+          <input type="text" name="name" id="registerName" autocomplete="name" required placeholder="Ada Lovelace">
+        </label>
+
+        <label class="field">
+          <span class="field__label">Email</span>
+          <input type="email" name="email" id="registerEmail" autocomplete="email" required placeholder="you@domain.com">
+        </label>
+
+        <label class="field">
+          <span class="field__label">Passphrase</span>
+          <div class="field__input-row">
+            <input type="password" name="password" id="registerPassword" autocomplete="new-password" required minlength="8" placeholder="min. 8 characters">
+            <button type="button" class="field__toggle" data-toggle-for="registerPassword" aria-label="Show passphrase">show</button>
+          </div>
+        </label>
+
+        <div class="strength" aria-hidden="true">
+          <div class="strength__bars">
+            <span class="strength__bar" data-bar="0"></span>
+            <span class="strength__bar" data-bar="1"></span>
+            <span class="strength__bar" data-bar="2"></span>
+            <span class="strength__bar" data-bar="3"></span>
+          </div>
+          <span class="strength__label" id="strengthLabel">key strength</span>
+        </div>
+
+        <p class="form-error" id="registerError" role="alert" aria-live="polite"></p>
+        <p class="form-success" id="registerSuccess" role="status" aria-live="polite"></p>
+
+        <button type="submit" class="btn btn--primary" id="registerSubmit">
+          <span class="btn__label">Generate key</span>
+          <span class="btn__spinner" aria-hidden="true"></span>
+        </button>
+
+        <p class="panel__footnote">Already enrolled? <button type="button" class="linklike" data-switch="login">Sign in</button></p>
+      </form>
+
+    </div>
+
+    <p class="config-warning" id="configWarning" hidden>
+      ⚠ Backend not configured — set <code>API_BASE</code> in <code>app.js</code> to your deployed Apps Script URL.
+    </p>
+  </section>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
